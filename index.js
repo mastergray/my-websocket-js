@@ -7,8 +7,8 @@ const PORT = 3001;
 const app = express();
 const wsInstance = expressWs(app);
 
-// Event Handler/Dispatcher:
-let monitorConnection; // Stores single monitor connection;
+// Stores single monitor connection:
+let monitorConnection; 
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
