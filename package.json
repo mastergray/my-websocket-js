@@ -1,0 +1,20 @@
+{
+  "name": "my-websocket-j",
+  "version": "0.0.1",
+  "description": "Proof-of-concept for using websockets with node.js and client-side javascript",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-ws": "^5.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

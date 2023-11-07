@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Some Website®</title>
+  <style>
+
+html, body {
+  height: 100%; /* Ensure that the HTML and body elements have 100% height */
+  display: flex; /* Create a flex container for the body */
+  flex-direction: column; /* Display child elements in a column layout */
+}
+
+    .container {
+        display: flex;
+        flex-direction: column; 
+        height:100%;
+        width:50%;
+        margin:auto;
+        margin-bottom:50px;
+    }
+
+    textarea {
+        resize:none;
+        width:100%;
+        flex:1;
+    }
+
+    h1 {
+        text-align:center;
+    }
+  </style>
+</head>
+<body>
+    <h1>Monitor</h1>
+    <div class="container">
+        <textarea id="messages"></textarea>
+    </div>
+    <script>
+        
+        (()=> {
+
+            /**
+             * 
+             *  Setup Websocket Connection
+             * 
+             */
+
+             const socket = new WebSocket('ws://192.168.1.21:3001/ws/monitor'); 
+             socket.onopen = () => {
+                console.log('Connected to the WebSocket server');
+            };
+
+            // Socket Error:
+            socket.addEventListener('error', (event) => {
+                alert("A WebSocket Error Has Occured");
+                console.error('WebSocket error:', event);
+            });
+
+            /**
+             * 
+             *  Event Handlers
+             * 
+             */
+
+            // Elements to reference:
+            const messageView = document.querySelector("#messages");
+            
+            // Show message recieved from a channel client:
+            socket.onmessage = (event) => {
+                
+                // Get message from socket:
+                const message = JSON.parse(event.data);
+                messageView.value += `${timeStamp()} | "${message.value}" From Channel #${message.channel} \n`
+                
+                // Always scroll to most recent mesage:
+                messageView.scrollTop = messageView.scrollHeight; 
+            };
+
+            // Listen if connection closes from server:
+            socket.addEventListener('close', (event) => {
+                alert("Connection Has Been Closed");
+                messageView.disabled = true;
+            });
+
+            /**
+             * 
+             *  Support Functions 
+             * 
+             */ 
+
+             // Create timestamp for when a message was sent:
+            function timeStamp() {
+
+                // Create a new Date object for the current time
+                const currentTime = new Date();
+
+                // Get hours, minutes, and seconds
+                const hours = currentTime.getHours().toString().padStart(2, '0');
+                const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+                const seconds = currentTime.getSeconds().toString().padStart(2, '0');
+                const milliseconds = currentTime.getMilliseconds().toString().padStart(3, '0');
+
+                // Format the timestamp as HH:MM:SS:MS
+                return `${hours}:${minutes}:${seconds}:${milliseconds}`;
+
+            }
+
+        })();
+        
+        
+    
+
+      </script>
+</body>
+</html>

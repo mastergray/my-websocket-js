@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Client For Some Website®</title>
+  <!--<link rel="stylesheet" href="/path/to/stylesheet.css">-->
+  <style></style>
+</head>
+<body>
+    <h1>Channel</h1>
+    <hr />
+    <header>
+        Channel ID
+        <span id="channelID">[channel ID]</span>
+    </header>
+    <p>
+        <header>Message</header>
+        <input type="text" id="channelMessage" /> <span id="messageStatus"></span>
+    </p>
+    <p>
+        <button id="sendMessage">Send</button>
+        <button id="closeConnection">Cancel</button>
+    </p>
+    <script>
+
+        (() => {
+
+            /**
+             * 
+             *  Setup Websocket Connection
+             * 
+             */
+
+            // Get channel ID:
+            const queryString = window.location.search;
+            const searchParams = new URLSearchParams(queryString);
+            const channelID = searchParams.get("id") ?? Date.now()
+
+            // Connect to socket
+            const socket = new WebSocket(`ws://192.168.1.21:3001/ws/channel/${channelID}`);
+            socket.onopen = () => {
+                console.log('Connected to the WebSocket server');
+            };
+
+            // Socket Error:
+            socket.addEventListener('error', (event) => {
+                alert("A WebSocket Error Has Occured");
+                console.error('WebSocket error:', event);
+            });
+            
+            /**
+             * 
+             *  Event Handlers
+             * 
+             */
+
+            // Elements to reference:
+            const channelIDView = document.querySelector("#channelID");
+            const channelMessageInput = document.querySelector("#channelMessage");
+            const sendChannelButton = document.querySelector("#sendMessage");
+            const closeConnectionButton = document.querySelector("#closeConnection");
+            const messageStatusView = document.querySelector("#messageStatus");
+
+            // Show Channel ID:
+            channelIDView.textContent = channelID 
+
+            // Send message to server using websocket:
+            sendChannelButton.addEventListener("click", function (evt) {
+                
+                // Send message:
+                socket.send(channelMessageInput.value);
+                
+                // Update view:
+                messageStatusView.textContent = "Sent";
+                channelMessageInput.value = "";
+                sendChannelButton.disabled = true;
+
+                // Show message status;
+                setTimeout(function () {
+                    messageStatusView.textContent = "";
+                    sendChannelButton.disabled = false;
+                }, 1000);
+
+            });
+
+            // Close connection:
+            closeConnectionButton.addEventListener("click", function (evt) {
+                socket.close();
+                alert("Connection Closed")
+                sendChannelButton.disabled = true;
+                channelMessageInput.disabled = true;
+            })
+
+        })();
+        
+    
+
+      </script>
+</body>
+</html>
