@@ -75,7 +75,7 @@ app.post("/channel/:channelID",  (req, res) => {
 
     if (monitorConnection) {
         console.log(`Message relayed by POST request ${channelID}`)
-        const json = JSON.stringify({"channel":req.params.channelID, "value":req.body.value});
+        const json = JSON.stringify({"channel":channelID, "value":value});
         monitorConnection.send(json);
         res.json({"success":true})
     } else {
